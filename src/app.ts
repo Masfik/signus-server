@@ -1,6 +1,7 @@
-import * as fastify from "fastify";
-// import { IncomingMessage, Server, ServerResponse } from "http";
+import * as express from "express";
+import * as WebSocket from "express-ws";
 
-const app: fastify.FastifyInstance = fastify({});
+const app = express();
+export const webSocket = WebSocket(app);
 
 export default app;
