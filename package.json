@@ -10,9 +10,11 @@
   "keywords": [],
   "license": "MIT",
   "dependencies": {
+    "@types/mongoose": "^5.7.12",
     "axios": "^0.19.2",
     "express": "^4.17.1",
-    "express-ws": "^4.0.0"
+    "express-ws": "^4.0.0",
+    "mongoose": "^5.9.9"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

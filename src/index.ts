@@ -1,13 +1,14 @@
 import app from "./app";
+import { mongodb } from "./api";
 
-const start = async () => {
-  try {
-    await app.listen(3000);
-    console.log(`Server started`);
-  } catch (err) {
-    console.log(err);
-    process.exit(1);
-  }
-};
-
-start();
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+  // Connect to signus database
+  mongodb
+    .then(value => {
+      console.log("Connection has been succesfully established!");
+    })
+    .catch(error => {
+      console.log("Connection error:", error);
+    });
+});
