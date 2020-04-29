@@ -5,7 +5,7 @@ const schema = mongoose.Schema;
 const userSchema = new schema({
   firstName: String,
   lastName: String,
-  userName: String,
+  username: String,
   email: String,
   password: String,
   chats: {
@@ -13,6 +13,4 @@ const userSchema = new schema({
   }
 });
 
-const user = mongoose.model("user", userSchema);
-
-module.exports = user;
+export const User = mongoose.model("User", userSchema);
