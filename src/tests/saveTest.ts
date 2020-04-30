@@ -1,5 +1,5 @@
 import { User } from "../models/user";
-import { assert } from "console";
+import { assert } from "chai";
 
 describe("Saving records in MongoDB", () => {
   // Tests
@@ -15,9 +15,7 @@ describe("Saving records in MongoDB", () => {
       }
     });
 
-    user.save().then(error => {
-      if (error) console.log(error);
-
+    user.save().then(() => {
       assert(user.isNew === false);
       done();
     });

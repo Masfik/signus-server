@@ -1,9 +1,11 @@
 import * as mongoose from "mongoose";
+import * as config from "../config.json";
 
 // Connection variable to mongodb
-const mongodb = mongoose.connect("mongodb://ovh.bitward.co.uk/signus", {
+const mongodb = mongoose.connect("mongodb://" + config.database.host, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false
 });
 
 before(done => {

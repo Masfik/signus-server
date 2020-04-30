@@ -1,7 +1,7 @@
 import { User } from "../models/user";
 import { assert } from "chai";
 
-describe("Finding records in MongoDB", () => {
+describe("Deleting records in MongoDB", () => {
   let user;
 
   // Create user for tests
@@ -23,16 +23,12 @@ describe("Finding records in MongoDB", () => {
   });
 
   // Tests
-  it("Finds the first matching record by username", done => {
-    User.findOne({ username: "test" }).then(response => {
-      assert(response["username"] === "test");
-      done();
-    });
-  });
-  it("Finds first matching record by ID", done => {
-    User.findOne({ _id: user._id }).then(response => {
-      assert(response._id.toString() === user._id.toString());
-      done();
+  it("Finds the first matching record and removes it", done => {
+    User.findOneAndRemove({ username: "test" }).then(() => {
+      User.findOne({ username: "test" }).then(response => {
+        assert(response === null);
+        done();
+      });
     });
   });
 });
