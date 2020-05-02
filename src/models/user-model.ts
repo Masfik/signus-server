@@ -1,16 +1,6 @@
 import * as mongoose from "mongoose";
-import { Schema, Document } from "mongoose";
-
-export interface User extends Document {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  password?: string;
-  chats: {
-    recipient: string[];
-  };
-}
+import { Schema } from "mongoose";
+import { User } from "./user";
 
 const userSchema = new Schema({
   firstName: {

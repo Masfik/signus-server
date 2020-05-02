@@ -1,5 +1,5 @@
-import UserModel from "../models/user-model";
 import { assert } from "chai";
+import UserModel from "../models/user-model";
 
 describe("Updating records in MongoDB", () => {
   let user;
