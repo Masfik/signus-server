@@ -1,12 +1,12 @@
 import * as mongoose from "mongoose";
-const { Schema } = mongoose;
+import { Schema, Document } from "mongoose";
 
-interface User extends Document {
+export interface User extends Document {
   firstName: string;
   lastName: string;
   username: string;
   email: string;
-  password: string;
+  password?: string;
   chats: {
     recipient: string[];
   };
@@ -40,4 +40,4 @@ const userSchema = new Schema({
   }
 });
 
-export const User = mongoose.model("User", userSchema);
+export default mongoose.model<User>("User", userSchema);

@@ -3,7 +3,7 @@ import * as config from "../config.json";
 import { User } from "./models/user";
 
 // Connection variable to mongodb
-const mongodb = mongoose.connect("mongodb://" + config.database.host, {
+const mongodb = mongoose.connect(`mongodb://${config.database.host}`, {
   // the following lines are required to handle deprecation warnings
   useNewUrlParser: true,
   useUnifiedTopology: true,
