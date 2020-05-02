@@ -5,7 +5,7 @@ describe("Finding records in MongoDB", () => {
   let user;
 
   // Create user for tests
-  beforeEach(done => {
+  beforeEach(async () => {
     user = new User({
       firstName: "Testy",
       lastName: "McTestFace",
@@ -17,9 +17,7 @@ describe("Finding records in MongoDB", () => {
       }
     });
 
-    user.save().then(() => {
-      done();
-    });
+    await user.save();
   });
 
   // Tests
@@ -29,6 +27,7 @@ describe("Finding records in MongoDB", () => {
       done();
     });
   });
+
   it("Finds first matching record by ID", done => {
     User.findOne({ _id: user._id }).then(response => {
       assert(response._id.toString() === user._id.toString());

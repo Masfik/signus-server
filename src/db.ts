@@ -1,11 +1,14 @@
 import * as mongoose from "mongoose";
 import * as config from "../config.json";
+import { User } from "./models/user";
 
 // Connection variable to mongodb
 const mongodb = mongoose.connect("mongodb://" + config.database.host, {
+  // the following lines are required to handle deprecation warnings
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useFindAndModify: false
+  useFindAndModify: false,
+  useCreateIndex: true
 });
 
 before(done => {
@@ -21,9 +24,7 @@ before(done => {
 });
 
 // Drop the users collection before each test
-beforeEach(done => {
+beforeEach(async () => {
   // Drop the collection
-  mongoose.connection.collections.users.drop(() => {
-    done();
-  });
+  await User.remove({});
 });

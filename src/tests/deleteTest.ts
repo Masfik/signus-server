@@ -5,7 +5,7 @@ describe("Deleting records in MongoDB", () => {
   let user;
 
   // Create user for tests
-  beforeEach(done => {
+  beforeEach(async () => {
     user = new User({
       firstName: "Testy",
       lastName: "McTestFace",
@@ -17,18 +17,14 @@ describe("Deleting records in MongoDB", () => {
       }
     });
 
-    user.save().then(() => {
-      done();
-    });
+    await user.save();
   });
 
   // Tests
-  it("Finds the first matching record and removes it", done => {
-    User.findOneAndRemove({ username: "test" }).then(() => {
-      User.findOne({ username: "test" }).then(response => {
-        assert(response === null);
-        done();
-      });
-    });
+  it("Finds the first matching record and removes it", async () => {
+    await User.findOneAndRemove({ username: "test" });
+
+    const response = await User.findOne({ username: "test" });
+    assert(response === null);
   });
 });
