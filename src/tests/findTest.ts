@@ -1,4 +1,4 @@
-import { User } from "../models/user";
+import UserModel from "../models/user-model";
 import { assert } from "chai";
 
 describe("Finding records in MongoDB", () => {
@@ -6,7 +6,7 @@ describe("Finding records in MongoDB", () => {
 
   // Create user for tests
   beforeEach(async () => {
-    user = new User({
+    user = new UserModel({
       firstName: "Testy",
       lastName: "McTestFace",
       username: "test",
@@ -21,17 +21,15 @@ describe("Finding records in MongoDB", () => {
   });
 
   // Tests
-  it("Finds the first matching record by username", done => {
-    User.findOne({ username: "test" }).then(response => {
-      assert(response["username"] === "test");
-      done();
-    });
+  it("Finds the first matching record by username", async () => {
+    const response = await UserModel.findOne({ username: "test" });
+
+    assert(response["username"] === "test");
   });
 
-  it("Finds first matching record by ID", done => {
-    User.findOne({ _id: user._id }).then(response => {
-      assert(response._id.toString() === user._id.toString());
-      done();
-    });
+  it("Finds first matching record by ID", async () => {
+    const response = await UserModel.findOne({ _id: user._id });
+
+    assert(response._id.toString() === user._id.toString());
   });
 });

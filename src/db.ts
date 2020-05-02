@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import * as config from "../config.json";
-import { User } from "./models/user";
+import UserModel from "./models/user-model";
 
 // Connection variable to mongodb
 const mongodb = mongoose.connect(`mongodb://${config.database.host}`, {
@@ -26,5 +26,5 @@ before(done => {
 // Drop the users collection before each test
 beforeEach(async () => {
   // Drop the collection
-  await User.remove({});
+  await UserModel.deleteMany({});
 });

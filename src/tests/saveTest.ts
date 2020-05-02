@@ -1,10 +1,10 @@
-import { User } from "../models/user";
+import UserModel from "../models/user-model";
 import { assert } from "chai";
 
 describe("Saving records in MongoDB", () => {
   // Tests
   it("Creates a user", async () => {
-    let user = new User({
+    let user = new UserModel({
       firstName: "Testy",
       lastName: "McTestFace",
       username: "test",

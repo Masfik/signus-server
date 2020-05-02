@@ -1,4 +1,4 @@
-import { User } from "../models/user";
+import UserModel from "../models/user-model";
 import { assert } from "chai";
 
 describe("Deleting records in MongoDB", () => {
@@ -6,7 +6,7 @@ describe("Deleting records in MongoDB", () => {
 
   // Create user for tests
   beforeEach(async () => {
-    user = new User({
+    user = new UserModel({
       firstName: "Testy",
       lastName: "McTestFace",
       username: "test",
@@ -22,9 +22,9 @@ describe("Deleting records in MongoDB", () => {
 
   // Tests
   it("Finds the first matching record and removes it", async () => {
-    await User.findOneAndRemove({ username: "test" });
+    await UserModel.findOneAndRemove({ username: "test" });
 
-    const response = await User.findOne({ username: "test" });
+    const response = await UserModel.findOne({ username: "test" });
     assert(response === null);
   });
 });

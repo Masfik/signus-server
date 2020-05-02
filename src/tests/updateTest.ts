@@ -1,4 +1,4 @@
-import { User } from "../models/user";
+import UserModel from "../models/user-model";
 import { assert } from "chai";
 
 describe("Updating records in MongoDB", () => {
@@ -6,7 +6,7 @@ describe("Updating records in MongoDB", () => {
 
   // Create user for tests
   beforeEach(async () => {
-    user = new User({
+    user = new UserModel({
       firstName: "Testy",
       lastName: "McTestFace",
       username: "test",
@@ -22,24 +22,46 @@ describe("Updating records in MongoDB", () => {
 
   // Tests
   it("Finds the first matching record and updates it", async () => {
-    await User.findOneAndUpdate(
+    await UserModel.findOneAndUpdate(
       { username: "test" },
       { password: "GreatThisWorks!" }
     );
 
-    const response = await User.findOne({ username: "test" });
+    const response = await UserModel.findOne({ username: "test" });
     assert(response["password"] === "GreatThisWorks!");
   });
 
   it("Appends a recipient to the chats object list", async () => {
-    await User.findOneAndUpdate(
+    await UserModel.updateOne(
       { username: "test" },
       {
         $push: { "chats.recipient": "Covfefe" }
       }
     );
 
-    const record = await User.findOne({ username: "test" });
+    const record = await UserModel.findOne({ username: "test" });
     assert(record["chats"]["recipient"].includes("Covfefe"));
+  });
+
+  it("Removes a chatlog from the recipient list", async () => {
+    await UserModel.updateOne(
+      { username: "test" },
+      {
+        $pull: { "chats.recipient": "Masfik" }
+      }
+    );
+
+    const response = await UserModel.findOne({ "chats.recipient": "Masfik" });
+    assert(response === null);
+  });
+
+  it("Flush chatlog", async () => {
+    await UserModel.updateOne(
+      { username: "test" },
+      { $set: { "chats.recipient": [] } }
+    );
+
+    const response = await UserModel.findOne({ username: "test" });
+    assert(response.chats.recipient.length === 0);
   });
 });
