@@ -1,7 +1,8 @@
 import * as express from "express";
-import * as WebSocket from "express-ws";
+import * as http from "http";
+import * as WebSocket from "ws";
 
-const app = express();
-export const webSocket = WebSocket(app);
+const app = http.createServer(express());
+export const wsServer = new WebSocket.Server({ server: app });
 
 export default app;
