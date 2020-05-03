@@ -9,7 +9,6 @@ server.listen(3000, () => {
     .catch(error => {
       console.log("Connection error (mongodb):", error);
     });
-
   console.log("Server is running on port 3000");
   import("./services/chat/ws-chat-service");
 });
