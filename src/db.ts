@@ -3,7 +3,7 @@ import * as config from "../config.json";
 import UserModel from "./models/user-model";
 
 // Connection variable to mongodb
-const mongodb = mongoose.connect(`mongodb://${config.database.host}`, {
+export const mongodb = mongoose.connect(`mongodb://${config.database.host}`, {
   // the following lines are required to handle deprecation warnings
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -12,14 +12,14 @@ const mongodb = mongoose.connect(`mongodb://${config.database.host}`, {
 });
 
 before(done => {
-  // Connect to Signus database
+  // Connect to signus database
   mongodb
     .then(() => {
-      console.log("Connection has been successfully established!");
+      console.log("Connection to mongodb has been succesfully established!");
       done();
     })
     .catch(error => {
-      console.log("Connection error:", error);
+      console.log("Connection error (mongodb):", error);
     });
 });
 

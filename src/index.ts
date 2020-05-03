@@ -1,8 +1,15 @@
 import { server } from "./app";
-import WSChatService from "./services/chat/ws-chat-service";
+import { mongodb } from "./db";
 
 server.listen(3000, () => {
-  console.log("Server is running on port 3000");
+  mongodb
+    .then(() => {
+      console.log("Connection to mongodb has been succesfully established!");
+    })
+    .catch(error => {
+      console.log("Connection error (mongodb):", error);
+    });
 
-  new WSChatService().start();
+  console.log("Server is running on port 3000");
+  import("./services/chat/ws-chat-service");
 });
