@@ -12,10 +12,10 @@ const mongodb = mongoose.connect(`mongodb://${config.database.host}`, {
 });
 
 before(done => {
-  // Connect to signus database
+  // Connect to Signus database
   mongodb
     .then(() => {
-      console.log("Connection has been succesfully established!");
+      console.log("Connection has been successfully established!");
       done();
     })
     .catch(error => {

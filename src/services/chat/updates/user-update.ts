@@ -1,4 +1,4 @@
-import { User } from "../../../models/user-model";
+import { User } from "../../../models/user";
 
 export default interface UserUpdate {
   type: UserUpdateType;

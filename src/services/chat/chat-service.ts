@@ -1,7 +1,11 @@
 import MessageUpdate from "./updates/message-update";
+import UserUpdate from "./updates/user-update";
+import UserStatusUpdate from "./updates/user-status-update";
 
-abstract class ChatService<T> {
-  chatClients: {
+export default abstract class ChatService<T> {
+  protected _started = false;
+
+  protected _chatClients: {
     [id: string]: T;
   } = {};
 
@@ -9,5 +13,7 @@ abstract class ChatService<T> {
 
   abstract sendMessage(messageUpdate: MessageUpdate): void;
 
-  abstract sendUserUpdate(): void;
+  abstract sendUserUpdate(userUpdate: UserUpdate): void;
+
+  abstract sendUserUpdateStatus(userStatusUpdate: UserStatusUpdate): void;
 }
