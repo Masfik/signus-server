@@ -1,9 +1,7 @@
 import * as WebSocket from "ws";
-import { server } from "../../app";
-import ChatService from "./chat-service";
-import MessageUpdate from "./updates/message-update";
-import UserUpdate from "./updates/user-update";
-import UserStatusUpdate from "./updates/user-status-update";
+import server from "../../../app";
+import ChatService from "../chat-service";
+import MessageUpdate from "../updates/message-update";
 
 export default class WSChatService extends ChatService<WebSocket> {
   // ws library instance
@@ -13,7 +11,7 @@ export default class WSChatService extends ChatService<WebSocket> {
   });
 
   start(): void {
-    if (this._started) return;
+    if (this.started) return;
 
     this._wsServer.on("connection", async (currentClient: WebSocket) => {
       /* TODO: replace pseudocode
@@ -37,12 +35,10 @@ export default class WSChatService extends ChatService<WebSocket> {
       });
     });
 
-    this._started = true;
+    this.started = true;
   }
 
-  sendMessage(messageUpdate: MessageUpdate): void {}
-
-  sendUserUpdate(userUpdate: UserUpdate): void {}
-
-  sendUserUpdateStatus(userUpdate: UserStatusUpdate): void {}
+  sendMessage(messageUpdate: MessageUpdate): void {
+    this.chatClients[messageUpdate.chatId].send(messageUpdate);
+  }
 }

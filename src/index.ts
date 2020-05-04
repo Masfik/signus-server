@@ -1,14 +1,15 @@
-import { server } from "./app";
+import app from "./app";
 import { mongodb } from "./db";
+import * as config from "../config.json";
 
-server.listen(3000, () => {
-  mongodb
-    .then(() => {
-      console.log("Connection to mongodb has been succesfully established!");
-    })
-    .catch(error => {
-      console.log("Connection error (mongodb):", error);
+mongodb
+  .then(() => {
+    console.log("Connection to mongodb has been successfully established!");
+
+    app.listen(config.web_server_port, () => {
+      console.log(`Server is running on port ${config.web_server_port}`);
     });
-  console.log("Server is running on port 3000");
-  import("./services/chat/ws-chat-service");
-});
+  })
+  .catch(error => {
+    console.log("Connection error (mongodb):", error);
+  });

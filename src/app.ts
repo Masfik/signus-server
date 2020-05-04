@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as http from "http";
-import routes from "./routes/router";
 import * as bodyParser from "body-parser";
+import routes from "./routes/router";
 
 // Express
 const app = express();
@@ -14,6 +14,4 @@ app.use(
 app.use(bodyParser.json());
 app.use(routes);
 
-export const server = http.createServer(app);
-
-export default app;
+export default http.createServer(app);

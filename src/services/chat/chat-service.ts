@@ -1,19 +1,21 @@
-import MessageUpdate from "./updates/message-update";
-import UserUpdate from "./updates/user-update";
-import UserStatusUpdate from "./updates/user-status-update";
+import { EventEmitter } from "events";
+import Chat from "./chat";
+
+export type Clients<T> = {
+  [id: string]: T;
+};
+export type EventName = "MessageUpdate" | "UserUpdate" | "UserStatusUpdate";
 
 export default abstract class ChatService<T> {
-  protected _started = false;
+  protected eventEmitter = new EventEmitter();
 
-  protected _chatClients: {
-    [id: string]: T;
-  } = {};
+  protected started = false;
+
+  protected chatClients: Clients<T> = {};
+
+  on(eventName: EventName, func: (client: T, chat: Chat<T>) => void) {
+    this.eventEmitter.on(eventName, func);
+  }
 
   abstract start(): void;
-
-  abstract sendMessage(messageUpdate: MessageUpdate): void;
-
-  abstract sendUserUpdate(userUpdate: UserUpdate): void;
-
-  abstract sendUserUpdateStatus(userStatusUpdate: UserStatusUpdate): void;
 }
