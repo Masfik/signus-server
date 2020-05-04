@@ -27,7 +27,8 @@ const userSchema = new Schema({
   },
   chats: {
     recipient: [String]
-  }
+  },
+  token: String
 });
 
 export default mongoose.model<User>("User", userSchema);

@@ -10,4 +10,5 @@ export interface User extends Document {
   chats?: {
     recipient: string[];
   };
+  token?: string;
 }
