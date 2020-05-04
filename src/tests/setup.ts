@@ -17,5 +17,6 @@ before(async () => {
 // Drop the users collection before each test
 beforeEach(async () => {
   // Drop the collection
-  await UserModel.deleteMany({});
+  await UserModel.deleteOne({ user: "test" });
+  console.log("Test User deleted");
 });
