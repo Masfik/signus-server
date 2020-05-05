@@ -1,21 +1,23 @@
-import { EventEmitter } from "events";
-import Chat from "./chat";
+import { ChatEventEmitter } from "./chat-event-emitter";
 
 export type Clients<T> = {
   [id: string]: T;
 };
-export type EventName = "MessageUpdate" | "UserUpdate" | "UserStatusUpdate";
 
 export default abstract class ChatService<T> {
-  protected eventEmitter = new EventEmitter();
+  protected handlers: ChatEventEmitter[] = [];
 
   protected started = false;
 
   protected chatClients: Clients<T> = {};
 
-  on(eventName: EventName, func: (client: T, chat: Chat<T>) => void) {
-    this.eventEmitter.on(eventName, func);
+  abstract start(): void;
+
+  use(...handlers: ChatEventEmitter[]) {
+    this.handlers.push(...handlers);
   }
 
-  abstract start(): void;
+  protected static emit() {
+    console.log("aaaa");
+  }
 }

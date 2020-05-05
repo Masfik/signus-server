@@ -1,7 +1,9 @@
-import * as express from "express";
+import { Router } from "express";
+import { randomBytes } from "crypto";
 import UserModel from "../models/user-model";
+import { User } from "../models/user";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/user", async (req, res, next) => {
   // Find user record in the database
@@ -29,28 +31,30 @@ router.get("/login", async (req, res, next) => {
     username: user
   }).catch(next);
 
-  if (authUser["password"] === req.body.password) {
+  if (authUser.password === req.body.password) {
     // Generate a random session token for the authenticated user
-    require("crypto").randomBytes(48, async (err, buffer) => {
+    randomBytes(48, async (err, buffer) => {
       if (err) throw err;
       const token = await buffer.toString("hex");
       // Save token in mongodb
       await UserModel.updateOne(
         { username: user },
         {
-          $set: { token: token }
+          $set: { token }
         }
       );
 
       res.send({
         message: "Login successful!",
-        _id: authUser["_id"],
-        username: authUser["username"],
-        firstName: authUser["firstName"],
-        lastName: authUser["lastName"],
-        email: authUser["email"],
-        chats: authUser["chats"],
-        token: token
+        user: <User>{
+          id: authUser._id,
+          username: authUser.username,
+          firstName: authUser.firstName,
+          lastName: authUser.lastName,
+          email: authUser.email,
+          chats: authUser.chats,
+          token
+        }
       });
     });
   } else res.send({ message: "Error: Username/Password mismatch" });

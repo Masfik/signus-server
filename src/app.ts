@@ -2,6 +2,7 @@ import * as express from "express";
 import * as http from "http";
 import * as bodyParser from "body-parser";
 import routes from "./routes/router";
+import WSChatService from "./services/chat/ws/ws-chat-service";
 
 // Express
 const app = express();
@@ -19,4 +20,10 @@ app.use((err, req, res, next) => {
   res.status(422).send({ error: err.message });
 });
 
-export default http.createServer(app);
+// Server
+const server = http.createServer(app);
+
+// ChatService
+export const chatService = new WSChatService(server);
+
+export default server;

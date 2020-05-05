@@ -1,19 +1,25 @@
 import * as WebSocket from "ws";
-import server from "../../../app";
+import { Server } from "http";
 import ChatService from "../chat-service";
 import MessageUpdate from "../updates/message-update";
 
 export default class WSChatService extends ChatService<WebSocket> {
+  constructor(private server: Server) {
+    super();
+  }
+
   // ws library instance
-  private _wsServer = new WebSocket.Server({
-    server,
+  private wsServer = new WebSocket.Server({
+    server: this.server,
     clientTracking: true
   });
 
   start(): void {
     if (this.started) return;
 
-    this._wsServer.on("connection", async (currentClient: WebSocket) => {
+    this.wsServer.on("connection", async (currentClient: WebSocket) => {
+      this.chatClients[Math.random().toString()] = currentClient;
+
       /* TODO: replace pseudocode
       currentClient.id = (await mongoose.userRepo.find({ token: header.token })).id;
       chatClients[currentClient.id] = currentClient
