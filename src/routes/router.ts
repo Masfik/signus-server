@@ -3,11 +3,23 @@ import UserModel from "../models/user-model";
 
 const router = express.Router();
 
-router.get("/user/:id", async (req, res, next) => {
+router.get("/user", async (req, res, next) => {
   // Find user record in the database
-  const user = await UserModel.findOne(req.body).catch(next);
+  const user = await UserModel.findOne(req.query).catch(next);
 
-  res.send();
+  res.send(user);
+});
+
+router.put("/user/chats", async (req, res, next) => {
+  await UserModel.updateOne(
+    { username: req.body.username },
+    {
+      $push: { "chats.recipient": req.body.recipient }
+    }
+  ).catch(next);
+  const user = await UserModel.findOne({ username: req.body.username });
+
+  res.send(user);
 });
 
 router.get("/login", async (req, res, next) => {
@@ -22,8 +34,14 @@ router.get("/login", async (req, res, next) => {
     require("crypto").randomBytes(48, async (err, buffer) => {
       if (err) throw err;
       const token = await buffer.toString("hex");
-      // save toke in mongodb
-      UserModel.updateOne({ username: user }, { $set: { token: token } });
+      // Save token in mongodb
+      await UserModel.updateOne(
+        { username: user },
+        {
+          $set: { token: token }
+        }
+      );
+
       res.send({
         message: "Login successful!",
         _id: authUser["_id"],
