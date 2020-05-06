@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { randomBytes } from "crypto";
-import UserModel from "../models/user-model";
+import UserRepo from "../repositories/mongoose/mongoose.user.repository";
 import { User } from "../models/user";
 
 const router = Router();
+const UserModel = new UserRepo();
 
 router.get("/user", async (req, res, next) => {
   // Find user record in the database
@@ -15,9 +16,12 @@ router.get("/user", async (req, res, next) => {
 router.put("/user/chats", async (req, res, next) => {
   await UserModel.updateOne(
     { username: req.body.username },
-    {
-      $push: { "chats.recipient": req.body.recipient }
-    }
+    <User>{
+      chats: {
+        recipient: req.body.recipient
+      }
+    },
+    UpdateType.PUSH
   ).catch(next);
   const user = await UserModel.findOne({ username: req.body.username });
 
@@ -27,9 +31,14 @@ router.put("/user/chats", async (req, res, next) => {
 router.get("/login", async (req, res, next) => {
   const user = req.body.username;
   // Find user record in the database
-  const authUser = await UserModel.findOne({
-    username: user
-  }).catch(next);
+  let authUser: User;
+  try {
+    authUser = await UserModel.findOne({
+      username: user
+    });
+  } catch (e) {
+    next = e;
+  }
 
   if (authUser.password === req.body.password) {
     // Generate a random session token for the authenticated user
@@ -39,9 +48,10 @@ router.get("/login", async (req, res, next) => {
       // Save token in mongodb
       await UserModel.updateOne(
         { username: user },
-        {
-          $set: { token }
-        }
+        <User>{
+          token
+        },
+        UpdateType.SET
       );
 
       res.send({

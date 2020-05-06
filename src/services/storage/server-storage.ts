@@ -4,7 +4,7 @@ interface ServerStorage<T> {
     username: string;
     password: string;
     database: string;
-  }): Promise<any>;
+  }): Promise<T>;
 
   database: T;
 

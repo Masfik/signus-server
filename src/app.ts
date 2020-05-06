@@ -4,6 +4,7 @@ import * as bodyParser from "body-parser";
 import routes from "./routes/router";
 import WSChatService from "./services/chat/ws/ws-chat-service";
 import chatHandler from "./chat-updates";
+import MongooseStorage from "./services/storage/mongoose/mongoose.storage";
 
 /* * * * *\
 * Express *
@@ -36,5 +37,11 @@ const server = http.createServer(app);
 
 export const chatService = new WSChatService(server);
 chatService.use(chatHandler);
+
+/* * * * * * *\
+*   Database  *
+\* * * * * * */
+
+export const database = new MongooseStorage();
 
 export default server;

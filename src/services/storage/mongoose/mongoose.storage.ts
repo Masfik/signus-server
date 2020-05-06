@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 import { Mongoose } from "mongoose";
 
-class MongooseStorage implements ServerStorage<Mongoose> {
+export default class MongooseStorage implements ServerStorage<Mongoose> {
   database: Mongoose;
 
   async connect(config: {
@@ -9,8 +9,14 @@ class MongooseStorage implements ServerStorage<Mongoose> {
     username: string;
     password: string;
     database: string;
-  }): Promise<any> {
-    this.database = await mongoose.connect(`mongodb://${config.host}`);
+  }): Promise<Mongoose> {
+    this.database = await mongoose.connect(`mongodb://${config.host}`, {
+      // the following lines are required to handle deprecation warnings
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true
+    });
     return this.database;
   }
 
