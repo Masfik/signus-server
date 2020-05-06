@@ -1,31 +1,31 @@
 import { EventEmitter } from "events";
 import { ChatEventEmitter } from "./services/chat/chat-event-emitter";
-import MessageUpdate from "./services/chat/updates/message-update";
+import { Message } from "./services/chat/updates/message-update";
 import UserUpdate from "./services/chat/updates/user-update";
 import UserStatusUpdate, {
   UserStatus
 } from "./services/chat/updates/user-status-update";
 
-const chatUpdate: ChatEventEmitter = new EventEmitter();
+const chatHandler: ChatEventEmitter = new EventEmitter();
 
-chatUpdate.on("MessageUpdate", chat => {
-  chat.sendMessage(<MessageUpdate>{
-    chatId: "",
-    messageId: Math.random().toString(),
-    dateTime: new Date(),
-    data: ""
-  });
+chatHandler.on("MessageUpdate", (chat, message: Message) => {
+  chat.sendMessage(message);
+  /*
+   * A "fromUser" field is currently unnecessary since chats are always one to one at the moment.
+   * The current implementation always inserts the sender by default without having to pass it as a parameter.
+   * This could be the future usage if group chats are ever implemented: chat.sendMessage(sender, message);
+   */
 });
 
-chatUpdate.on("UserUpdate", chat => {
+chatHandler.on("UserUpdate", chat => {
   chat.sendUserUpdate(<UserUpdate>{});
 });
 
-chatUpdate.on("UserStatusUpdate", chat => {
+chatHandler.on("UserStatusUpdate", chat => {
   chat.sendUserUpdateStatus(<UserStatusUpdate>{
     userId: "",
     status: UserStatus.ONLINE
   });
 });
 
-export default chatUpdate;
+export default chatHandler;

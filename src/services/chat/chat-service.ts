@@ -1,4 +1,5 @@
-import { ChatEventEmitter } from "./chat-event-emitter";
+import { ChatEventEmitter, ChatEvent } from "./chat-event-emitter";
+import Chat from "./chat";
 
 export type Clients<T> = {
   [id: string]: T;
@@ -17,7 +18,9 @@ export default abstract class ChatService<T> {
     this.handlers.push(...handlers);
   }
 
-  protected static emit() {
-    console.log("aaaa");
+  protected emit(event: ChatEvent, chat: Chat<T>, updateData) {
+    this.handlers.forEach(emitter => {
+      emitter.emit(event, chat, updateData);
+    });
   }
 }

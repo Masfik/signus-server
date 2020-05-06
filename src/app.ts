@@ -3,8 +3,12 @@ import * as http from "http";
 import * as bodyParser from "body-parser";
 import routes from "./routes/router";
 import WSChatService from "./services/chat/ws/ws-chat-service";
+import chatHandler from "./chat-updates";
 
-// Express
+/* * * * *\
+* Express *
+\* * * * */
+
 const app = express();
 // The order of the following few lines is important!
 app.use(
@@ -20,10 +24,17 @@ app.use((err, req, res, next) => {
   res.status(422).send({ error: err.message });
 });
 
-// Server
+/* * * * * * *\
+* HTTP Server *
+\* * * * * * */
+
 const server = http.createServer(app);
 
-// ChatService
+/* * * * * * *\
+* ChatService *
+\* * * * * * */
+
 export const chatService = new WSChatService(server);
+chatService.use(chatHandler);
 
 export default server;

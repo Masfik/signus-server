@@ -1,4 +1,5 @@
 export default interface MessageUpdate extends Message {
+  from?: string; // TODO: in case group chats are ever implemented
   chatId: string;
 }
 

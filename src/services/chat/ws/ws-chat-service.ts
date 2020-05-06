@@ -8,7 +8,7 @@ export default class WSChatService extends ChatService<WebSocket> {
     super();
   }
 
-  // ws library instance
+  // WebSocket instance from the "ws" library
   private wsServer = new WebSocket.Server({
     server: this.server,
     clientTracking: true
@@ -17,28 +17,33 @@ export default class WSChatService extends ChatService<WebSocket> {
   start(): void {
     if (this.started) return;
 
-    this.wsServer.on("connection", async (currentClient: WebSocket) => {
-      this.chatClients[Math.random().toString()] = currentClient;
+    this.wsServer.on("connection", async (clientSocket, request) => {
+      console.log(`[WS] ${request.socket.address()} connected.`);
+      this.chatClients[Math.random().toString()] = clientSocket;
 
       /* TODO: replace pseudocode
       currentClient.id = (await mongoose.userRepo.find({ token: header.token })).id;
       chatClients[currentClient.id] = currentClient
         */
 
-      currentClient.on("message", (message: string) => {
+      clientSocket.on("message", (message: string) => {
         // const jsonMessage = JSON.parse(message);
         console.log(`Received: ${message}`);
 
         // chatClients[jsonMessage.chatId].send(messageUpdate)
       });
 
-      currentClient.on("close", client => {
-        console.log(`${client} disconnected.`);
+      clientSocket.on("close", () => {
+        console.log(`[WS] ${request.socket.address()} disconnected.`);
         /*
         delete chatClients[currentClient.id];
         delete currentClient.id;
       */
       });
+    });
+
+    this.wsServer.on("upgrade", (request, socket, head) => {
+      // TODO authentication
     });
 
     this.started = true;
