@@ -8,6 +8,8 @@ module.exports = {
   },
   rules: {
     "no-underscore-dangle": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "class-methods-use-this": "off",
+    "no-param-reassign": "off"
   }
 };

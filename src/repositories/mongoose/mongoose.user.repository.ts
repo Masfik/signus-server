@@ -1,28 +1,60 @@
 import { User } from "../../models/user";
 import UserModel from "../../models/user-model";
+import Repository from "../repository";
+import { UpdateType } from "./update-type";
+
+// TODO: Chats are currently filtered out from the results since they are work in progress.
 
 export default class MongooseUserRepository implements Repository<User> {
-  async findOne(query: {}): Promise<User> {
+  findOne(query: {}): Promise<User> {
     // Find user record in the database
-    return await UserModel.findOne(query);
+    return UserModel.findOne(query).then((user: User) => {
+      if (user == null) return null;
+      return <User>{
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        token: user.token
+      };
+    });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async findAll(query: {}): Promise<User[]> {
     return []; // TODO
   }
 
-  async create(record: User): Promise<User> {
-    return await UserModel.create(record);
-  }
-
-  async updateOne(query: {}, record: User, type: UpdateType): Promise<User> {
-    return await UserModel.updateOne(query, {
-      UpdateType: record
+  create(record: User): Promise<User> {
+    return UserModel.create(record).then((user: User) => {
+      return <User>{
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email
+      };
     });
   }
 
-  async delete(record: User): Promise<boolean> {
-    const userDelete = await UserModel.deleteOne(record);
-    return userDelete == 1 ? true : false;
+  updateOne(query: {}, record: User, updateType: UpdateType): Promise<User> {
+    return UserModel.updateOne(query, {
+      [updateType]: record
+    }).then((user: User) => {
+      return <User>{
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        token: user.token
+      };
+    });
+  }
+
+  delete(record: User): Promise<boolean> {
+    return UserModel.deleteOne(record).then(value => value === 1);
   }
 }

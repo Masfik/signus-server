@@ -2,15 +2,25 @@ import { Router } from "express";
 import { randomBytes } from "crypto";
 import UserRepo from "../repositories/mongoose/mongoose.user.repository";
 import { User } from "../models/user";
+import { UpdateType } from "../repositories/mongoose/update-type";
 
 const router = Router();
 const UserModel = new UserRepo();
 
-router.get("/user", async (req, res, next) => {
-  // Find user record in the database
-  const user = await UserModel.findOne(req.query).catch(next);
+router.get("/user/:username", async (req, res, next) => {
+  try {
+    // Find user record in the database
+    const user: User = await UserModel.findOne(<User>{
+      username: req.params.username
+    });
 
-  res.send(user);
+    if (user != null) {
+      delete user.password;
+      res.send(user);
+    } else res.send({ message: "Error: No user found!" });
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.put("/user/chats", async (req, res, next) => {
@@ -29,15 +39,14 @@ router.put("/user/chats", async (req, res, next) => {
 });
 
 router.get("/login", async (req, res, next) => {
-  const user = req.body.username;
-  // Find user record in the database
+  const { username } = req.body;
+
   let authUser: User;
   try {
-    authUser = await UserModel.findOne({
-      username: user
-    });
+    // Find user record in the database
+    authUser = await UserModel.findOne(<User>{ username });
   } catch (e) {
-    next = e;
+    next(e);
   }
 
   if (authUser.password === req.body.password) {
@@ -46,13 +55,7 @@ router.get("/login", async (req, res, next) => {
       if (err) throw err;
       const token = await buffer.toString("hex");
       // Save token in mongodb
-      await UserModel.updateOne(
-        { username: user },
-        <User>{
-          token
-        },
-        UpdateType.SET
-      );
+      await UserModel.updateOne({ username }, <User>{ token }, UpdateType.SET);
 
       res.send({
         message: "Login successful!",
@@ -71,8 +74,13 @@ router.get("/login", async (req, res, next) => {
 });
 
 router.post("/register", async (req, res, next) => {
-  const user = await UserModel.create(req.body).catch(next);
-  res.send(user);
+  try {
+    const user: User = await UserModel.create(req.body);
+    delete user.password;
+    res.send(user);
+  } catch (e) {
+    next(e);
+  }
 });
 
 export default router;
