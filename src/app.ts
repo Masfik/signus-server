@@ -1,4 +1,5 @@
 import * as express from "express";
+// import session from "express-session";
 import * as http from "http";
 import * as bodyParser from "body-parser";
 import routes from "./routes/router";
@@ -29,8 +30,22 @@ app.use(routes);
 // error handling middleware
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err, req, res, next) => {
-  res.status(422).send({ error: err.message });
+  res.sendStatus(422);
 });
+
+/*
+// Session handling middleware
+app.use(session({
+  name: 'token',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    sameSite: true, // 'strict'
+    secure: true,
+    maxAge: 172800000
+  }
+}))
+*/
 
 /* * * * * * *\
 * HTTP Server *

@@ -10,6 +10,11 @@ const UserModel = new UserRepository(); // TODO: could make use of DI and avoid 
 
 router.get("/user/:username", async (req, res, next) => {
   let user: User;
+  // Authenticate user token
+  if ((await validateToken(req.header("authorization"))) === null) {
+    res.sendStatus(401);
+    return;
+  }
   try {
     // Find user record in the database
     user = await UserModel.findOne({
@@ -29,6 +34,12 @@ router.get("/user/:username", async (req, res, next) => {
 });
 
 router.put("/user/chats", async (req, res, next) => {
+  // Authenticate user token
+  if ((await validateToken(req.header("authorization"))) === null) {
+    res.sendStatus(401);
+    return;
+  }
+
   await UserModel.updateOne(
     { username: req.body.username },
     <User>{
@@ -45,6 +56,11 @@ router.put("/user/chats", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   const { identifier } = req.body;
+  // Authenticate user token
+  if ((await validateToken(req.header("authorization"))) === null) {
+    res.sendStatus(401);
+    return;
+  }
 
   let authUser: User;
   try {
@@ -80,6 +96,12 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/register", async (req, res, next) => {
+  // Authenticate user token
+  if ((await validateToken(req.header("authorization"))) === null) {
+    res.sendStatus(401);
+    return;
+  }
+
   try {
     const user: User = await UserModel.create({
       ...req.body,
@@ -100,6 +122,11 @@ router.post("/register", async (req, res, next) => {
 async function generateToken(): Promise<string> {
   const randomBytes = util.promisify(randomBytesCB);
   return (await randomBytes(48)).toString("hex");
+}
+
+async function validateToken(token: string): Promise<User> {
+  const user = await UserModel.findOne({ token });
+  return user;
 }
 
 export default router;
