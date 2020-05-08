@@ -1,26 +1,31 @@
 import { Router } from "express";
-import { randomBytes } from "crypto";
-import UserRepo from "../repositories/mongoose/mongoose.user.repository";
+import { randomBytes as randomBytesCB } from "crypto";
+import * as util from "util";
 import { User } from "../models/user";
 import { UpdateType } from "../repositories/mongoose/update-type";
+import UserRepository from "../repositories/mongoose/mongoose.user.repository";
 
 const router = Router();
-const UserModel = new UserRepo();
+const UserModel = new UserRepository(); // TODO: could make use of DI and avoid changing repositories all over the place
 
 router.get("/user/:username", async (req, res, next) => {
+  let user: User;
   try {
     // Find user record in the database
-    const user: User = await UserModel.findOne(<User>{
+    user = await UserModel.findOne({
       username: req.params.username
     });
-
-    if (user != null) {
-      delete user.password;
-      res.send(user);
-    } else res.send({ message: "Error: No user found!" });
   } catch (e) {
     next(e);
   }
+
+  if (user != null) {
+    // Removing password and token from the response
+    delete user.password;
+    delete user.token;
+
+    res.send(user);
+  } else res.send({ message: "Error: No user found!" });
 });
 
 router.put("/user/chats", async (req, res, next) => {
@@ -38,49 +43,63 @@ router.put("/user/chats", async (req, res, next) => {
   res.send(user);
 });
 
-router.get("/login", async (req, res, next) => {
-  const { username } = req.body;
+router.post("/login", async (req, res, next) => {
+  const { identifier } = req.body;
 
   let authUser: User;
   try {
     // Find user record in the database
-    authUser = await UserModel.findOne(<User>{ username });
+    authUser = await UserModel.findOne(<User>{
+      [identifier.includes("@") ? "email" : "username"]: identifier
+    });
   } catch (e) {
     next(e);
   }
 
-  if (authUser.password === req.body.password) {
+  if (authUser != null && authUser.password === req.body.password) {
     // Generate a random session token for the authenticated user
-    randomBytes(48, async (err, buffer) => {
-      if (err) throw err;
-      const token = await buffer.toString("hex");
-      // Save token in mongodb
-      await UserModel.updateOne({ username }, <User>{ token }, UpdateType.SET);
+    const token = await generateToken();
+    // Save token in mongodb
+    await UserModel.updateOne(
+      <User>{ [identifier.includes("@") ? "email" : "username"]: identifier },
+      <User>{ token },
+      UpdateType.SET
+    );
 
-      res.send({
-        message: "Login successful!",
-        user: <User>{
-          id: authUser._id,
-          username: authUser.username,
-          firstName: authUser.firstName,
-          lastName: authUser.lastName,
-          email: authUser.email,
-          chats: authUser.chats,
-          token
-        }
-      });
+    // Removing password from the results
+    delete authUser.password;
+
+    res.send({
+      message: "Login successful!",
+      user: <User>{
+        ...authUser,
+        token
+      }
     });
   } else res.send({ message: "Error: Username/Password mismatch" });
 });
 
 router.post("/register", async (req, res, next) => {
   try {
-    const user: User = await UserModel.create(req.body);
+    const user: User = await UserModel.create({
+      ...req.body,
+      token: await generateToken()
+    });
+    // Removing password from the result
     delete user.password;
-    res.send(user);
+
+    res.send({
+      message: "Registered successfully!",
+      user
+    });
   } catch (e) {
     next(e);
   }
 });
+
+async function generateToken(): Promise<string> {
+  const randomBytes = util.promisify(randomBytesCB);
+  return (await randomBytes(48)).toString("hex");
+}
 
 export default router;

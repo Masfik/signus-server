@@ -7,6 +7,12 @@ import chatHandler from "./chat-updates";
 import MongooseStorage from "./services/storage/mongoose/mongoose.storage";
 
 /* * * * *\
+* Storage *
+\* * * * */
+
+export const database = new MongooseStorage();
+
+/* * * * *\
 * Express *
 \* * * * */
 
@@ -21,6 +27,7 @@ app.use(bodyParser.json());
 // initialise routes
 app.use(routes);
 // error handling middleware
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err, req, res, next) => {
   res.status(422).send({ error: err.message });
 });
@@ -35,13 +42,9 @@ const server = http.createServer(app);
 * ChatService *
 \* * * * * * */
 
-export const chatService = new WSChatService(server);
-chatService.use(chatHandler);
-
-/* * * * * * *\
-*   Database  *
-\* * * * * * */
-
-export const database = new MongooseStorage();
+export const chatService = new WSChatService(server, {
+  storage: database,
+  handlers: [chatHandler]
+});
 
 export default server;

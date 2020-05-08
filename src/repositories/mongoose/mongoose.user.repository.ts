@@ -1,5 +1,5 @@
 import { User } from "../../models/user";
-import UserModel from "../../models/user-model";
+import UserModel from "./models/user-model";
 import Repository from "../repository";
 import { UpdateType } from "./update-type";
 
@@ -34,7 +34,8 @@ export default class MongooseUserRepository implements Repository<User> {
         firstName: user.firstName,
         lastName: user.lastName,
         username: user.username,
-        email: user.email
+        email: user.email,
+        token: user.token
       };
     });
   }

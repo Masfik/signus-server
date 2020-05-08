@@ -1,5 +1,6 @@
 import * as mongoose from "mongoose";
 import { Mongoose } from "mongoose";
+import ServerStorage from "../server-storage";
 
 export default class MongooseStorage implements ServerStorage<Mongoose> {
   database: Mongoose;

@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import UserModel from "../models/user-model";
+import UserModel from "../repositories/mongoose/models/user-model";
 import { User } from "../models/user";
 
 describe("Saving records in MongoDB", () => {

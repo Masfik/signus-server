@@ -1,5 +1,5 @@
 import { mongodb } from "../db";
-import UserModel from "../models/user-model";
+import UserModel from "../repositories/mongoose/models/user-model";
 
 before(async () => {
   // Connect to signus database

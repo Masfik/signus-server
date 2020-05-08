@@ -1,4 +1,4 @@
-interface ServerStorage<T> {
+export default interface ServerStorage<T> {
   connect(config: {
     host: string;
     username: string;

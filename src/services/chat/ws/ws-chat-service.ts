@@ -2,10 +2,18 @@ import * as WebSocket from "ws";
 import { Server } from "http";
 import ChatService from "../chat-service";
 import MessageUpdate from "../updates/message-update";
+import ServerStorage from "../../storage/server-storage";
+import { ChatEventEmitter } from "../chat-event-emitter";
 
 export default class WSChatService extends ChatService<WebSocket> {
-  constructor(private server: Server) {
-    super();
+  constructor(
+    private server: Server,
+    options: {
+      storage: ServerStorage<any>;
+      handlers: ChatEventEmitter[];
+    }
+  ) {
+    super(options.storage, ...options.handlers);
   }
 
   // WebSocket instance from the "ws" library
@@ -17,9 +25,13 @@ export default class WSChatService extends ChatService<WebSocket> {
   start(): void {
     if (this.started) return;
 
+    console.log("[WS] WebSocket service started.");
     this.wsServer.on("connection", async (clientSocket, request) => {
-      console.log(`[WS] ${request.socket.address()} connected.`);
-      this.chatClients[Math.random().toString()] = clientSocket;
+      console.log(
+        `[WS] ${request.socket.remoteAddress} connected with token: ${request.headers.authorization}.`
+      );
+      clientSocket.id = "";
+      this.chatClients[""] = clientSocket;
 
       /* TODO: replace pseudocode
       currentClient.id = (await mongoose.userRepo.find({ token: header.token })).id;
@@ -34,7 +46,7 @@ export default class WSChatService extends ChatService<WebSocket> {
       });
 
       clientSocket.on("close", () => {
-        console.log(`[WS] ${request.socket.address()} disconnected.`);
+        console.log(`[WS] ${request.socket.remoteAddress} disconnected.`);
         /*
         delete chatClients[currentClient.id];
         delete currentClient.id;

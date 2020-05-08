@@ -1,3 +1,4 @@
+import * as WebSocket from "ws";
 import Chat from "../chat";
 import MessageUpdate, { Message } from "../updates/message-update";
 import UserUpdate from "../updates/user-update";

@@ -13,5 +13,5 @@ database
     chatService.start();
   })
   .catch(error => {
-    console.log("Connection error (mongodb):", error);
+    console.log("Connection error:", error);
   });

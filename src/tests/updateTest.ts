@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import UserModel from "../models/user-model";
+import UserModel from "../repositories/mongoose/models/user-model";
 
 describe("Updating records in MongoDB", () => {
   let user;
@@ -28,7 +28,7 @@ describe("Updating records in MongoDB", () => {
     );
 
     const response = await UserModel.findOne({ username: "test" });
-    assert(response["password"] === "GreatThisWorks!");
+    assert(response.password === "GreatThisWorks!");
   });
 
   it("Appends a recipient to the chats object list", async () => {
@@ -40,7 +40,7 @@ describe("Updating records in MongoDB", () => {
     );
 
     const record = await UserModel.findOne({ username: "test" });
-    assert(record["chats"]["recipient"].includes("Covfefe"));
+    assert(record.chats.recipient.includes("Covfefe"));
   });
 
   it("Removes a chatlog from the recipient list", async () => {

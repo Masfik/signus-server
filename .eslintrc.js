@@ -10,6 +10,7 @@ module.exports = {
     "no-underscore-dangle": "off",
     "no-console": "off",
     "class-methods-use-this": "off",
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "@typescript-eslint/no-use-before-define": "off"
   }
 };
