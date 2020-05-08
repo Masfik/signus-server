@@ -4,7 +4,11 @@ import MessageUpdate, { Message } from "../updates/message-update";
 import UserUpdate from "../updates/user-update";
 import UserStatusUpdate from "../updates/user-status-update";
 
-class WSChat extends Chat<WebSocket> {
+export default class WSChat extends Chat<WebSocket> {
+  public constructor(client: WebSocket) {
+    super(client);
+  }
+
   sendMessage(message: Message): void {
     this.client.send(
       JSON.stringify(<MessageUpdate>{

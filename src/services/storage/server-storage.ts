@@ -1,3 +1,5 @@
+import Repository from "../../repositories/repository";
+
 export default interface ServerStorage<T> {
   connect(config: {
     host: string;
@@ -7,6 +9,10 @@ export default interface ServerStorage<T> {
   }): Promise<T>;
 
   database: T;
+
+  repositories: {
+    user: Repository<any>;
+  };
 
   init(): Promise<void> | void;
 

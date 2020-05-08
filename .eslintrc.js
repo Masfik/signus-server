@@ -11,6 +11,7 @@ module.exports = {
     "no-console": "off",
     "class-methods-use-this": "off",
     "no-param-reassign": "off",
+    "import/no-cycle": "off",
     "@typescript-eslint/no-use-before-define": "off"
   }
 };

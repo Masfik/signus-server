@@ -1,17 +1,19 @@
 import * as express from "express";
-// import session from "express-session";
 import * as http from "http";
 import * as bodyParser from "body-parser";
 import routes from "./routes/router";
 import WSChatService from "./services/chat/ws/ws-chat-service";
 import chatHandler from "./chat-updates";
 import MongooseStorage from "./services/storage/mongoose/mongoose.storage";
+import MongooseUserRepository from "./repositories/mongoose/mongoose.user.repository";
 
 /* * * * *\
 * Storage *
 \* * * * */
 
-export const database = new MongooseStorage();
+export const database = new MongooseStorage({
+  user: new MongooseUserRepository()
+});
 
 /* * * * *\
 * Express *

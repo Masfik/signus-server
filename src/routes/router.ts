@@ -30,7 +30,7 @@ router.get("/user/:username", async (req, res, next) => {
     delete user.token;
 
     res.send(user);
-  } else res.send({ message: "Error: No user found!" });
+  } else res.sendStatus(404);
 });
 
 router.put("/user/chats", async (req, res, next) => {
@@ -56,11 +56,6 @@ router.put("/user/chats", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   const { identifier } = req.body;
-  // Authenticate user token
-  if ((await validateToken(req.header("authorization"))) === null) {
-    res.sendStatus(401);
-    return;
-  }
 
   let authUser: User;
   try {
@@ -75,7 +70,7 @@ router.post("/login", async (req, res, next) => {
   if (authUser != null && authUser.password === req.body.password) {
     // Generate a random session token for the authenticated user
     const token = await generateToken();
-    // Save token in mongodb
+    // Save token in the database
     await UserModel.updateOne(
       <User>{ [identifier.includes("@") ? "email" : "username"]: identifier },
       <User>{ token },

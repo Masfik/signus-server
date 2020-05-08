@@ -1,9 +1,17 @@
 import * as mongoose from "mongoose";
 import { Mongoose } from "mongoose";
 import ServerStorage from "../server-storage";
+import Repository from "../../../repositories/repository";
+import { User } from "../../../models/user";
 
 export default class MongooseStorage implements ServerStorage<Mongoose> {
   database: Mongoose;
+
+  repositories: { user: Repository<User> };
+
+  constructor(repositories: { user: Repository<User> }) {
+    this.repositories = repositories;
+  }
 
   async connect(config: {
     host: string;
