@@ -8,7 +8,7 @@ import UserRepository from "../repositories/mongoose/mongoose.user.repository";
 const router = Router();
 const UserModel = new UserRepository(); // TODO: could make use of DI and avoid changing repositories all over the place
 
-router.get("/user/:username", async (req, res, next) => {
+router.get("/user", async (req, res, next) => {
   let user: User;
   // Authenticate user token
   if ((await validateToken(req.header("authorization"))) === null) {
@@ -18,7 +18,9 @@ router.get("/user/:username", async (req, res, next) => {
   try {
     // Find user record in the database
     user = await UserModel.findOne({
-      username: req.params.username
+      [req.query.username === "username" ? "username" : "_id"]: req.query[
+        req.query.username === "username" ? "username" : "_id"
+      ]
     });
   } catch (e) {
     next(e);
@@ -87,16 +89,10 @@ router.post("/login", async (req, res, next) => {
         token
       }
     });
-  } else res.send({ message: "Error: Username/Password mismatch" });
+  } else res.send({ Error: "Username/Password mismatch" });
 });
 
 router.post("/register", async (req, res, next) => {
-  // Authenticate user token
-  if ((await validateToken(req.header("authorization"))) === null) {
-    res.sendStatus(401);
-    return;
-  }
-
   try {
     const user: User = await UserModel.create({
       ...req.body,

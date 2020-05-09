@@ -32,7 +32,7 @@ const userSchema = new Schema({
   token: String,
   userStatus: {
     type: String,
-    enum: UserStatus
+    enum: [UserStatus.BUSY, UserStatus.OFFLINE, UserStatus.ONLINE]
   }
 });
 
