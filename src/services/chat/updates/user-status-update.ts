@@ -4,7 +4,7 @@ export default interface UserStatusUpdate {
 }
 
 export enum UserStatus {
-  ONLINE,
   OFFLINE,
+  ONLINE,
   BUSY
 }

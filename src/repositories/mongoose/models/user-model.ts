@@ -1,6 +1,7 @@
 import * as mongoose from "mongoose";
 import { Schema } from "mongoose";
 import { User } from "../../../models/user";
+import { UserStatus } from "../../../services/chat/updates/user-status-update";
 
 const userSchema = new Schema({
   firstName: {
@@ -28,7 +29,11 @@ const userSchema = new Schema({
   chats: {
     recipient: [String]
   },
-  token: String
+  token: String,
+  userStatus: {
+    type: String,
+    enum: UserStatus
+  }
 });
 
 export default mongoose.model<User>("User", userSchema);
