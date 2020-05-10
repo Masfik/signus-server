@@ -30,7 +30,7 @@ const userSchema = new Schema({
     recipient: [String]
   },
   token: String,
-  userStatus: {
+  status: {
     type: String,
     enum: [UserStatus.BUSY, UserStatus.OFFLINE, UserStatus.ONLINE]
   }

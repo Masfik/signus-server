@@ -16,11 +16,12 @@ router.get("/user", async (req, res, next) => {
     return;
   }
   try {
+    // If the username param is not undefined, use "username" as the key to search in the database.
+    const key = typeof req.query.username !== "undefined" ? "username" : "_id";
+
     // Find user record in the database
     user = await UserModel.findOne({
-      [req.query.username === "username" ? "username" : "_id"]: req.query[
-        req.query.username === "username" ? "username" : "_id"
-      ]
+      [key]: req.query[key.replace("_", "")] // Removing the underscore from the id query
     });
   } catch (e) {
     next(e);
@@ -89,7 +90,7 @@ router.post("/login", async (req, res, next) => {
         token
       }
     });
-  } else res.send({ Error: "Username/Password mismatch" });
+  } else res.send({ message: "Username/Password mismatch" });
 });
 
 router.post("/register", async (req, res, next) => {
@@ -116,8 +117,7 @@ async function generateToken(): Promise<string> {
 }
 
 async function validateToken(token: string): Promise<User> {
-  const user = await UserModel.findOne({ token });
-  return user;
+  return UserModel.findOne({ token });
 }
 
 export default router;

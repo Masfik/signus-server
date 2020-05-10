@@ -5,8 +5,27 @@ import UserUpdate from "./services/chat/updates/user-update";
 import UserStatusUpdate, {
   UserStatus
 } from "./services/chat/updates/user-status-update";
+import { database } from "./app";
+import { User } from "./models/user";
+import { UpdateType } from "./repositories/mongoose/update-type";
 
 const chatHandler: ChatEventEmitter = new EventEmitter();
+
+chatHandler.on("Connection", async chat => {
+  await database.repositories.user.updateOne(
+    { _id: chat.id },
+    <User>{ status: UserStatus.ONLINE.toString() },
+    UpdateType.SET
+  );
+});
+
+chatHandler.on("Close", async chat => {
+  await database.repositories.user.updateOne(
+    { _id: chat.id },
+    <User>{ status: UserStatus.OFFLINE.toString() },
+    UpdateType.SET
+  );
+});
 
 chatHandler.on("MessageUpdate", (chat, message: Message) => {
   chat.sendMessage(message);

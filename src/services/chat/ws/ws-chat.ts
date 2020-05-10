@@ -7,10 +7,11 @@ import UserStatusUpdate from "../updates/user-status-update";
 export default class WSChat extends Chat<WebSocket> {
   public constructor(client: WebSocket) {
     super(client);
+    this.id = client?.id;
   }
 
   sendMessage(message: Message): void {
-    this.client.send(
+    this.client?.send(
       JSON.stringify(<MessageUpdate>{
         chatId: this.client.id,
         ...message

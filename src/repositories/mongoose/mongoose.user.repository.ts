@@ -10,15 +10,13 @@ export default class MongooseUserRepository implements Repository<User> {
     // Find user record in the database
     return UserModel.findOne(query).then((user: User) => {
       if (user == null) return null;
-      return <User>{
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        email: user.email,
-        password: user.password,
-        token: user.token
-      };
+
+      const newUser: User = user.toObject();
+      newUser.id = user._id;
+      delete newUser._id;
+      delete newUser.__v;
+      delete newUser.chats; // TODO
+      return newUser;
     });
   }
 
@@ -29,29 +27,23 @@ export default class MongooseUserRepository implements Repository<User> {
 
   create(record: User): Promise<User> {
     return UserModel.create(record).then((user: User) => {
-      return <User>{
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        email: user.email,
-        token: user.token
-      };
+      const newUser: User = user.toObject();
+      newUser.id = user._id;
+      delete newUser._id;
+      delete newUser.__v;
+      delete newUser.password;
+      delete newUser.chats; // TODO
+      return newUser;
     });
   }
 
-  updateOne(query: {}, record: User, updateType: UpdateType): Promise<User> {
-    return UserModel.updateOne(query, {
+  async updateOne(
+    query: {},
+    record: User,
+    updateType: UpdateType
+  ): Promise<void> {
+    await UserModel.updateOne(query, {
       [updateType]: record
-    }).then((user: User) => {
-      return <User>{
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        username: user.username,
-        email: user.email,
-        token: user.token
-      };
     });
   }
 

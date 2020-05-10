@@ -3,6 +3,8 @@ import UserUpdate from "./updates/user-update";
 import UserStatusUpdate from "./updates/user-status-update";
 
 export default abstract class Chat<T> {
+  id: string;
+
   protected constructor(protected client: T) {}
 
   abstract sendMessage(message: Message): void;

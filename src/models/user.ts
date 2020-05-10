@@ -11,5 +11,5 @@ export interface User extends Document {
     recipient: string[];
   };
   token?: string;
-  UserStatus: string;
+  status: string;
 }
