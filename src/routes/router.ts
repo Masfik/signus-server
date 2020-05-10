@@ -1,64 +1,123 @@
-import * as express from "express";
-import UserModel from "../models/user-model";
+import { Router } from "express";
+import { randomBytes as randomBytesCB } from "crypto";
+import * as util from "util";
+import { User } from "../models/user";
+import { UpdateType } from "../repositories/mongoose/update-type";
+import UserRepository from "../repositories/mongoose/mongoose.user.repository";
 
-const router = express.Router();
+const router = Router();
+const UserModel = new UserRepository(); // TODO: could make use of DI and avoid changing repositories all over the place
 
 router.get("/user", async (req, res, next) => {
-  // Find user record in the database
-  const user = await UserModel.findOne(req.query).catch(next);
+  let user: User;
+  // Authenticate user token
+  if ((await validateToken(req.header("authorization"))) === null) {
+    res.sendStatus(401);
+    return;
+  }
+  try {
+    // If the username param is not undefined, use "username" as the key to search in the database.
+    const key = typeof req.query.username !== "undefined" ? "username" : "_id";
 
-  res.send(user);
+    // Find user record in the database
+    user = await UserModel.findOne({
+      [key]: req.query[key.replace("_", "")] // Removing the underscore from the id query
+    });
+  } catch (e) {
+    next(e);
+  }
+
+  if (user != null) {
+    // Removing password and token from the response
+    delete user.password;
+    delete user.token;
+
+    res.send(user);
+  } else res.sendStatus(404);
 });
 
 router.put("/user/chats", async (req, res, next) => {
+  // Authenticate user token
+  if ((await validateToken(req.header("authorization"))) === null) {
+    res.sendStatus(401);
+    return;
+  }
+
   await UserModel.updateOne(
     { username: req.body.username },
-    {
-      $push: { "chats.recipient": req.body.recipient }
-    }
+    <User>{
+      chats: {
+        recipient: req.body.recipient
+      }
+    },
+    UpdateType.PUSH
   ).catch(next);
   const user = await UserModel.findOne({ username: req.body.username });
 
   res.send(user);
 });
 
-router.get("/login", async (req, res, next) => {
-  const user = req.body.username;
-  // Find user record in the database
-  const authUser = await UserModel.findOne({
-    username: user
-  }).catch(next);
+router.post("/login", async (req, res, next) => {
+  const { identifier } = req.body;
 
-  if (authUser["password"] === req.body.password) {
-    // Generate a random session token for the authenticated user
-    require("crypto").randomBytes(48, async (err, buffer) => {
-      if (err) throw err;
-      const token = await buffer.toString("hex");
-      // Save token in mongodb
-      await UserModel.updateOne(
-        { username: user },
-        {
-          $set: { token: token }
-        }
-      );
-
-      res.send({
-        message: "Login successful!",
-        _id: authUser["_id"],
-        username: authUser["username"],
-        firstName: authUser["firstName"],
-        lastName: authUser["lastName"],
-        email: authUser["email"],
-        chats: authUser["chats"],
-        token: token
-      });
+  let authUser: User;
+  try {
+    // Find user record in the database
+    authUser = await UserModel.findOne(<User>{
+      [identifier.includes("@") ? "email" : "username"]: identifier
     });
-  } else res.send({ message: "Error: Username/Password mismatch" });
+  } catch (e) {
+    next(e);
+  }
+
+  if (authUser != null && authUser.password === req.body.password) {
+    // Generate a random session token for the authenticated user
+    const token = await generateToken();
+    // Save token in the database
+    await UserModel.updateOne(
+      <User>{ [identifier.includes("@") ? "email" : "username"]: identifier },
+      <User>{ token },
+      UpdateType.SET
+    );
+
+    // Removing password from the results
+    delete authUser.password;
+
+    res.send({
+      message: "Login successful!",
+      user: <User>{
+        ...authUser,
+        token
+      }
+    });
+  } else res.send({ message: "Username/Password mismatch" });
 });
 
 router.post("/register", async (req, res, next) => {
-  const user = await UserModel.create(req.body).catch(next);
-  res.send(user);
+  try {
+    const user: User = await UserModel.create({
+      ...req.body,
+      token: await generateToken()
+    });
+    // Removing password from the result
+    delete user.password;
+
+    res.send({
+      message: "Registered successfully!",
+      user
+    });
+  } catch (e) {
+    next(e);
+  }
 });
+
+async function generateToken(): Promise<string> {
+  const randomBytes = util.promisify(randomBytesCB);
+  return (await randomBytes(48)).toString("hex");
+}
+
+async function validateToken(token: string): Promise<User> {
+  return UserModel.findOne({ token });
+}
 
 export default router;

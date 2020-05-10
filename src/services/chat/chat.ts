@@ -1,14 +1,17 @@
-import MessageUpdate from "./updates/message-update";
+import { Message } from "./updates/message-update";
 import UserUpdate from "./updates/user-update";
 import UserStatusUpdate from "./updates/user-status-update";
-import { Clients } from "./chat-service";
 
 export default abstract class Chat<T> {
-  protected constructor(public readonly clients: Clients<T>) {}
+  id: string;
 
-  abstract sendMessage(messageUpdate: MessageUpdate): void;
+  protected constructor(protected client: T) {}
 
+  abstract sendMessage(message: Message): void;
+
+  // TODO: WIP
   abstract sendUserUpdate(userUpdate: UserUpdate): void;
 
+  // TODO: WIP
   abstract sendUserUpdateStatus(userStatusUpdate: UserStatusUpdate): void;
 }

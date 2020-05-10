@@ -1,12 +1,29 @@
+import * as WebSocket from "ws";
 import Chat from "../chat";
-import MessageUpdate from "../updates/message-update";
+import MessageUpdate, { Message } from "../updates/message-update";
 import UserUpdate from "../updates/user-update";
 import UserStatusUpdate from "../updates/user-status-update";
 
-class WSChat extends Chat<WebSocket> {
-  sendMessage(messageUpdate: MessageUpdate): void {}
+export default class WSChat extends Chat<WebSocket> {
+  public constructor(client: WebSocket) {
+    super(client);
+    this.id = client?.id;
+  }
 
-  sendUserUpdate(userUpdate: UserUpdate): void {}
+  sendMessage(message: Message): void {
+    this.client?.send(
+      JSON.stringify(<MessageUpdate>{
+        chatId: this.client.id,
+        ...message
+      })
+    );
+  }
 
-  sendUserUpdateStatus(userStatusUpdate: UserStatusUpdate): void {}
+  sendUserUpdate(userUpdate: UserUpdate): void {
+    console.log(`${this.client}: ${userUpdate}`); // TODO
+  }
+
+  sendUserUpdateStatus(userStatusUpdate: UserStatusUpdate): void {
+    console.log(`${this.client}: ${userStatusUpdate}`); // TODO
+  }
 }

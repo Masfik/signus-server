@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import UserModel from "../models/user-model";
+import UserModel from "../repositories/mongoose/models/user-model";
 
 describe("Deleting records in MongoDB", () => {
   let user;

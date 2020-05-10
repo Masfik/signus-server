@@ -1,21 +1,35 @@
-import { EventEmitter } from "events";
+import { ChatEventEmitter, ChatEvent } from "./chat-event-emitter";
 import Chat from "./chat";
+import ServerStorage from "../storage/server-storage";
 
 export type Clients<T> = {
   [id: string]: T;
 };
-export type EventName = "MessageUpdate" | "UserUpdate" | "UserStatusUpdate";
 
 export default abstract class ChatService<T> {
-  protected eventEmitter = new EventEmitter();
+  protected storage: ServerStorage<any>;
+
+  protected handlers: ChatEventEmitter[] = [];
 
   protected started = false;
 
   protected chatClients: Clients<T> = {};
 
-  on(eventName: EventName, func: (client: T, chat: Chat<T>) => void) {
-    this.eventEmitter.on(eventName, func);
+  protected constructor(
+    storage: ServerStorage<any>,
+    ...handlers: ChatEventEmitter[]
+  ) {
+    this.storage = storage;
+    this.handlers.push(...handlers);
   }
 
   abstract start(): void;
+
+  useHandlers(...handlers: ChatEventEmitter[]) {
+    this.handlers.push(...handlers);
+  }
+
+  protected emit(event: ChatEvent, chat: Chat<T>, updateData) {
+    this.handlers.forEach(emitter => emitter.emit(event, chat, updateData));
+  }
 }

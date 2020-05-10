@@ -25,7 +25,7 @@ We recommend creating a config.json file in the root directory of this repo and 
 ## Configured Routes
 
 - `/user` ➔ Searches for specific user in the database, requires a token in the header and a `query` parameter
-  - `/user/chats` ➔ Adds a chat to the recipient list of the user in mongodb. Requires a usernames in the request body
+  - `/user/chats` ➔ Adds a chat to the recipient list of the user in mongodb. Requires a usernames in the query params (for a future use case)
 - `/login` ➔ Returns a token if identifier and hashed password have been validated. Requires both identifier and password in request body
 - `/register` ➔ Inserts a record in the database and returns a token. Requires all compulsory fields (See user model below) in the request body
 
