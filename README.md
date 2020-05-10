@@ -57,6 +57,10 @@ firstName: {
   chats: {
     recipient: [String]
   },
-  token: String
+  token: String,
+  status: {
+    type: String,
+    enum: [UserStatus.BUSY, UserStatus.OFFLINE, UserStatus.ONLINE]
+  }
 }
 ```
