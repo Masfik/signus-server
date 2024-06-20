@@ -16,7 +16,7 @@
     "express": "^4.19.2",
     "express-session": "^1.17.1",
     "mongoose": "^5.13.20",
-    "ws": "^7.4.6"
+    "ws": "^7.5.10"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
